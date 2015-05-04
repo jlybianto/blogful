@@ -4,6 +4,7 @@ from blog import app
 from .database import session
 from .models import Post
 
+
 @app.route("/")
 @app.route("/page/<int:page>")
 def posts(page=1, paginate_by=10):
@@ -35,13 +36,16 @@ def posts(page=1, paginate_by=10):
                         total_pages=total_pages
                         )
 
+
 @app.route("/post/add", methods=["GET"])
 def add_post_get():
   # Route will only be used for GET requests to the page
   return render_template("add_post.html")
 
+
 import mistune
 from flask import request, redirect, url_for
+
 
 @app.route("/post/add", methods=["POST"])
 def add_post_post():
@@ -55,3 +59,11 @@ def add_post_post():
   
   # Send user back to the front page after post is created
   return redirect(url_for("posts"))
+
+
+@app.route("/post/<int:id>")
+def view_post(id):
+  # Route for single post view by clicking post title
+  post = session.query(Post).get(id)
+  return render_template("single_post.html", 
+                        post=post)
