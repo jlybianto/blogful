@@ -9,9 +9,19 @@
   </div>
   <div class="col-md-10">
     <h1>
-      {{ post.title }}
+      <!-- Change post title into a link for single post view -->
+      <a href="{{ url_for('view_post', id=post.id) }}">{{ post.title }}</a>
     </h1>
     {{ post.content | safe }}
   </div>
+</div>
+{% endmacro %}
+
+{% macro render_single_post(post) %}
+<div class="col-md-10">
+  <h1>
+    <a href="{{ url_for('view_post', id=post.id) }}">{{ post.title }}</a>
+  </h1>
+  {{ post.content | safe }}
 </div>
 {% endmacro %}
