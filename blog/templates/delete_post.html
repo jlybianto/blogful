@@ -1,0 +1,21 @@
+{% import "macros.html" as macros %}
+{% extends "base.html" %}
+
+{% block content %}
+<div class="col-md-12">
+  <h1 style="color:#CC0000; font-weight:bold"><bold>Confirm Post Delete</bold></h1>
+</div>
+
+{{ macros.render_single_post(post) }}
+
+<div class="col-md-3">
+  <form method="POST">
+    <a href="{{ url_for('delete_post_post', id=post.id) }}">
+      <button type="submit" class="btn btn-default">Confirm</button>
+    </a>
+    <a href="{{ url_for('posts', id=post.id) }}">
+      <button type="button" class="btn btn-default">Cancel</button>
+    </a>
+  </form>
+</div>
+{% endblock %}
