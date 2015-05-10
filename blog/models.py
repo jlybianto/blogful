@@ -4,6 +4,8 @@ from sqlalchemy import Column, Integer, String, Text, DateTime
 
 from .database import Base, engine
 
+from flask.ext.login import UserMixin
+
 class Post(Base):
   __tablename__ = "posts"
   
@@ -12,13 +14,9 @@ class Post(Base):
   content = Column(Text)
   datetime = Column(DateTime, default=datetime.datetime.now)
 
-from flask.ext.login import UserMixin
-
 class User(Base, UserMixin):
   """
-  User model inherits from the declarative base and from UserMixin
-  class which adds a series of default methods to make authentication
-  work.
+  Inherits from the declarative base and Flask-Login UserMixin class which adds a series of default methods to make authentication work.
   """
   __tablename__ = "users"
   

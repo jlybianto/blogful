@@ -40,10 +40,6 @@ def adduser():
     password = getpass("Password: ")
     password_2 = getpass("Re-enter password: ")
   user = User(name=name, email=email, password=generate_password_hash(password))
-  # Hashing converts the plain text password to a string of characters.
-  # For passwords one-way hashes will be used. From a string of text, the
-  # same string of characters can be obtained from a hashing algorithm, but
-  # from a string of characters, the string of text is impossible to be obtained.
   session.add(user)
   session.commit()
 
