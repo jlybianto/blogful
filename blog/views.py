@@ -53,6 +53,9 @@ def add_post_get():
 import mistune
 from flask import request, redirect, url_for
 
+# To assign the logged in user as the author of a post
+from flask.ext.login import current_user
+
 
 @app.route("/post/add", methods=["POST"])
 @login_required
@@ -61,6 +64,8 @@ def add_post_post():
   post = Post(
     title=request.form["title"],
     content=mistune.markdown(request.form["content"]),
+    # Assign the logged in user as the author of a post
+    author=current_user
   )
   session.add(post)
   session.commit()

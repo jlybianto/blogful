@@ -6,13 +6,9 @@ from .database import Base, engine
 
 from flask.ext.login import UserMixin
 
-class Post(Base):
-  __tablename__ = "posts"
-  
-  id = Column(Integer, primary_key=True)
-  title = Column(String(1024))
-  content = Column(Text)
-  datetime = Column(DateTime, default=datetime.datetime.now)
+# Update models to have a One-to-Many relationship between User and Post
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 
 class User(Base, UserMixin):
   """
@@ -24,5 +20,17 @@ class User(Base, UserMixin):
   name = Column(String(128))
   email = Column(String(128), unique=True)
   password = Column(String(128))
+  # Add One-to-Many relationship between the User and Post model
+  posts = relationship("Post", backref="author")
+
+class Post(Base):
+  __tablename__ = "posts"
+  
+  id = Column(Integer, primary_key=True)
+  title = Column(String(1024))
+  content = Column(Text)
+  datetime = Column(DateTime, default=datetime.datetime.now)
+  # Add One-to-Many relationship between the User and Post model
+  author_id = Column(Integer, ForeignKey('users.id'))
 
 Base.metadata.create_all(engine)

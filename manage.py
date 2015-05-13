@@ -59,6 +59,9 @@ class DB(object):
 
 # Create an instance of the Flask-Migrate class
 # Add all of the commands held in the Migrate class to the management script
+# Run 'python manage.py db migrate' to generate a migration script
+# If script looks correct then 'python manage.py db upgrade' will apply the changes
+# To roll back changes, run 'python manage.py downgrade' to reverse migration
 migrate = Migrate(app, DB(Base.metadata))
 manager.add_command('db', MigrateCommand)
 
