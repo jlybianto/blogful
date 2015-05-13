@@ -43,5 +43,24 @@ def adduser():
   session.add(user)
   session.commit()
 
+# Manage database migrations using Flask-Migrate
+# Migrations allow setting up a series of scripts
+# To easily move between different database schemas, add/removing columns
+# SQLAlchemy has a migration tool called Alembic
+from flask.ext.migrate import Migrate, MigrateCommand
+from blog.database import Base
+
+class DB(object):
+  """
+  Designed to hold metadata object. Alembic uses the metadata to work out what the changes to the database schema should be.
+  """
+  def __init__(self, metadata):
+    self.metadata = metadata
+
+# Create an instance of the Flask-Migrate class
+# Add all of the commands held in the Migrate class to the management script
+migrate = Migrate(app, DB(Base.metadata))
+manager.add_command('db', MigrateCommand)
+
 if __name__ == "__main__":
   manager.run()
