@@ -9,6 +9,8 @@ from flask.ext.login import login_user
 from werkzeug.security import check_password_hash
 from .models import User
 
+from flask.ext.login import login_required
+
 @app.route("/")
 @app.route("/page/<int:page>")
 def posts(page=1, paginate_by=10):
@@ -42,6 +44,7 @@ def posts(page=1, paginate_by=10):
 
 
 @app.route("/post/add", methods=["GET"])
+@login_required
 def add_post_get():
   # Route will only be used for GET requests to the page
   return render_template("add_post.html")
@@ -52,6 +55,7 @@ from flask import request, redirect, url_for
 
 
 @app.route("/post/add", methods=["POST"])
+@login_required
 def add_post_post():
   # Route for the POST request during form submission
   post = Post(
