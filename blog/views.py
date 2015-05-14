@@ -1,18 +1,27 @@
 from flask import render_template
 
+# To display post entries
 from blog import app
 from .database import session
 from .models import Post
 
+# To setup authentication using Flask-Login
 from flask import flash
-from flask.ext.login import login_user
+from flask.ext.login import login_user, logout_user, login_required
 from werkzeug.security import check_password_hash
 from .models import User
 
-from flask.ext.login import login_required
+# Import Markdown parser to use Markdown syntax in posts
+import mistune
+from flask import request, redirect, url_for
 
-from flask.ext.login import logout_user
+# To assign the logged in user as the author of a post
+from flask.ext.login import current_user
 
+
+# Display Posts
+# Pagination for viewing convenience by set number of post entries per page
+# Single post view for post entry modification
 @app.route("/")
 @app.route("/page/<int:page>")
 def posts(page=1, paginate_by=10):
@@ -44,20 +53,22 @@ def posts(page=1, paginate_by=10):
                         total_pages=total_pages
                         )
 
+@app.route("/post/<int:id>")
+def view_post(id):
+  # Route for single post view by clicking post title
+  post = session.query(Post).get(id)
+  return render_template("single_post.html", 
+                        post=post)
 
+
+# Add Posts
+# Require users to be logged in to access feature
+# Author of added entry will be assigned and displayed
 @app.route("/post/add", methods=["GET"])
 @login_required
 def add_post_get():
   # Route will only be used for GET requests to the page
   return render_template("add_post.html")
-
-
-import mistune
-from flask import request, redirect, url_for
-
-# To assign the logged in user as the author of a post
-from flask.ext.login import current_user
-
 
 @app.route("/post/add", methods=["POST"])
 @login_required
@@ -76,21 +87,19 @@ def add_post_post():
   return redirect(url_for("posts"))
 
 
-@app.route("/post/<int:id>")
-def view_post(id):
-  # Route for single post view by clicking post title
-  post = session.query(Post).get(id)
-  return render_template("single_post.html", 
-                        post=post)
-
-
+# Edit Posts
+# Require users to be logged in to access feature
+# Only author of post entry can edit the post
 @app.route("/post/<int:id>/edit", methods=["GET"])
 @login_required
 def edit_post_get(id):
   post = session.query(Post).get(id)
-  return render_template("edit_post.html", post=post)
-
-
+  if post.author == current_user:
+    return render_template("edit_post.html", post=post)
+  else:
+    flash("Sorry, you are not authorized to modify this post", "danger")
+    return redirect(url_for("posts"))
+  
 @app.route("/post/<int:id>/edit", methods=["POST"])
 @login_required
 def edit_post_post(id):
@@ -99,15 +108,22 @@ def edit_post_post(id):
   post.content = mistune.markdown(request.form["content"]),
   session.add(post)
   session.commit()
+  flash("Post successfully edited", "success")
   return redirect(url_for("posts"))
 
 
+# Delete Posts
+# Require users to be logged in to access feature
+# Only author of post entry can delete the post
 @app.route("/post/<int:id>/delete", methods=["GET"])
 @login_required
 def delete_post_get(id):
   post = session.query(Post).get(id)
-  return render_template("delete_post.html", post=post)
-
+  if post.author == current_user:
+    return render_template("delete_post.html", post=post)
+  else:
+    flash("Sorry, you are not authorized to modify this post", "danger")
+    return redirect(url_for("posts"))
   
 @app.route("/post/<int:id>/delete", methods=["POST"])
 @login_required
@@ -115,13 +131,19 @@ def delete_post_post(id):
   post = session.query(Post).get(id)
   session.delete(post)
   session.commit()
+  flash("Post successfully deleted", "success")
   return redirect(url_for("posts"))
 
+
+# Login Page and Logout Feature
+# Alerts will be used to notify login/logout attempts
 @app.route("/login", methods=["GET"])
 def login_get():
   return render_template("login.html")
 
 @app.route("/login", methods=["POST"])
+# Query to find the user object with matching e-mail address
+# Verify existence of user and compare password to the hash stored in database
 def login_post():
   email = request.form["email"]
   password = request.form["password"]
@@ -129,8 +151,9 @@ def login_post():
   if not user or not check_password_hash(user.password, password):
     flash("Incorrect username or password", "danger")
     return redirect(url_for("login_get"))
-  
-  login_user(user)
+  else:
+    login_user(user)
+    flash("Aww yeah! Login successful and welcome back!", "success")
   return redirect(request.args.get('next') or url_for("posts"))
 
 @app.route("/logout")

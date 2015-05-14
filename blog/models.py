@@ -1,14 +1,14 @@
 import datetime
-
 from sqlalchemy import Column, Integer, String, Text, DateTime
-
 from .database import Base, engine
 
+# For User model creation
 from flask.ext.login import UserMixin
 
 # Update models to have a One-to-Many relationship between User and Post
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
+
 
 class User(Base, UserMixin):
   """
@@ -23,6 +23,7 @@ class User(Base, UserMixin):
   # Add One-to-Many relationship between the User and Post model
   posts = relationship("Post", backref="author")
 
+
 class Post(Base):
   __tablename__ = "posts"
   
@@ -33,4 +34,6 @@ class Post(Base):
   # Add One-to-Many relationship between the User and Post model
   author_id = Column(Integer, ForeignKey('users.id'))
 
+
+# Construct the table in the database
 Base.metadata.create_all(engine)

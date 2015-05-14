@@ -1,4 +1,5 @@
 {% macro render_post(post) %}
+<!-- Takes a post as a single argument -->
 <div class="row">
   <div class="col-md-2 text-right metadata">
     <ul class="list-unstyled">
@@ -14,11 +15,13 @@
       <a href="{{ url_for('view_post', id=post.id) }}">{{ post.title }}</a>
     </h1>
     {{ post.content | safe }}
+    <!-- Filter 'safe' to include HTML in post content without being escaped -->
   </div>
 </div>
 {% endmacro %}
 
 {% macro render_single_post(post) %}
+<!-- No link on single post view -->
 <div class="col-md-12">
   <h1>
     {{ post.title }}
