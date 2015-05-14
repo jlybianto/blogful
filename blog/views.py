@@ -85,12 +85,14 @@ def view_post(id):
 
 
 @app.route("/post/<int:id>/edit", methods=["GET"])
+@login_required
 def edit_post_get(id):
   post = session.query(Post).get(id)
   return render_template("edit_post.html", post=post)
 
 
 @app.route("/post/<int:id>/edit", methods=["POST"])
+@login_required
 def edit_post_post(id):
   post = session.query(Post).get(id)
   post.title = request.form["title"],
@@ -101,12 +103,14 @@ def edit_post_post(id):
 
 
 @app.route("/post/<int:id>/delete", methods=["GET"])
+@login_required
 def delete_post_get(id):
   post = session.query(Post).get(id)
   return render_template("delete_post.html", post=post)
 
   
 @app.route("/post/<int:id>/delete", methods=["POST"])
+@login_required
 def delete_post_post(id):
   post = session.query(Post).get(id)
   session.delete(post)
