@@ -11,6 +11,8 @@ from .models import User
 
 from flask.ext.login import login_required
 
+from flask.ext.login import logout_user
+
 @app.route("/")
 @app.route("/page/<int:page>")
 def posts(page=1, paginate_by=10):
@@ -126,3 +128,9 @@ def login_post():
   
   login_user(user)
   return redirect(request.args.get('next') or url_for("posts"))
+
+@app.route("/logout")
+def logout():
+  logout_user()
+  flash("You have been logged out", "danger")
+  return redirect(url_for('posts'))
