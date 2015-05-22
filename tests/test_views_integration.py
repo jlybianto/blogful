@@ -63,6 +63,54 @@ class TestViews(unittest.TestCase):
     self.assertEqual(post.title, "Test Post")
     self.assertEqual(post.content, "<p>Test Content</p>\n")
     self.assertEqual(post.author, self.user)
+    
+  def testEditPost(self):
+    # To act as a logged in user
+    self.simulate_login()
+    
+    # Send a POST request to add
+    response = self.client.post("/post/add", data={
+        "title": "Test Post",
+        "content": "Test Content"
+        })
+    
+    self.assertEqual(response.status_code, 302)
+    self.assertEqual(urlparse(response.location).path, "/")
+    posts = session.query(models.Post).all()
+    self.assertEqual(len(posts), 1)    
+    
+    # Send a POST request to edit
+    post = posts[0].id
+    self.client.post("/post/{}/edit".format(post), data={
+        "title": "Change Test Post",
+        "content": "Change Test Content"
+      })
+    
+    post = session.query(models.Post).first()    
+    self.assertEqual(post.title, "Change Test Post")
+    self.assertEqual(post.content, "<p>Change Test Content</p>\n")
+    self.assertEqual(post.author, self.user)
+    
+  def testDeletePost(self):
+    # To act as a logged in user
+    self.simulate_login()
+    
+    # Send a POST request to add
+    response = self.client.post("/post/add", data={
+        "title": "Test Post",
+        "content": "Test Content"
+        })
+    
+    self.assertEqual(response.status_code, 302)
+    self.assertEqual(urlparse(response.location).path, "/")
+    posts = session.query(models.Post).all()
+    self.assertEqual(len(posts), 1)
+    
+    # Send a POST request to delete
+    post = posts[0].id
+    self.client.post("/post/{}/delete".format(post))
+    posts = session.query(models.Post).all()
+    self.assertEqual(len(posts), 0)
 
 # Run tests using 'PYTHONPATH=. python tests/test_views_integration.py'
 # Set PYTHONPATH environment variable to import the blog module
