@@ -55,20 +55,20 @@ class TestViews(unittest.TestCase):
     self.browser.quit()
     
   def testLoginCorrect(self):
-    self.browser.visit("http://127.0.0.1:5000/login")
+    self.browser.visit("http://0.0.0.0:5000/login")
     self.browser.fill("email", "alice@example.com")
     self.browser.fill("password", "test")
     button = self.browser.find_by_css("button[type=submit]")
     button.click()
-    self.assertEqual(self.browser.url, "http://127.0.0.1:5000/")
+    self.assertEqual(self.browser.url, "http://0.0.0.0:5000/")
   
   def testLoginIncorrect(self):
-    self.browser.visit("http://127.0.0.1:5000/login")
+    self.browser.visit("http://0.0.0.0:5000/login")
     self.browser.fill("email", "bob@example.com")
     self.browser.fill("password", "test")
     button = self.browser.find_by_css("button[type=submit]")
     button.click()
-    self.assertEqual(self.browser.url, "http://127.0.0.1:5000/login")
+    self.assertEqual(self.browser.url, "http://0.0.0.0:5000/login")
 
 # Run tests using 'PYTHONPATH=. python tests/test_views_acceptance.py'
 # Set PYTHONPATH environment variable to import the blog module
