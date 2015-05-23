@@ -38,7 +38,7 @@ class TestViews(unittest.TestCase):
                            password=generate_password_hash("test"))
     session.add(self.user)
     session.commit()
-    
+
     self.process = multiprocessing.Process(target=app.run)
     self.process.start()
     time.sleep(1)
